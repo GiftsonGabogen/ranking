@@ -1,9 +1,9 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, cardAnimations, cardVariants } from "@/lib/design-token-utils"
-import { SkeletonCard } from "./skeleton"
+import { cn, cardAnimations, cardVariants } from "@/lib/design-token-utils";
+import { SkeletonCard } from "./skeleton";
 
 const cardVariantsCVA = cva(
   "rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900",
@@ -13,27 +13,31 @@ const cardVariantsCVA = cva(
         default: [
           cardVariants.surface.default,
           cardAnimations.base,
+        ].join(" "),
+        animated: [
+          cardVariants.surface.default,
+          cardAnimations.base,
           cardAnimations.lift,
           cardAnimations.softDepth,
-        ].join(' '),
+        ].join(" "),
         elevated: [
           cardVariants.surface.elevated,
           cardAnimations.base,
           cardAnimations.elevate,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         glass: [
           cardVariants.surface.glass,
           cardAnimations.base,
           cardAnimations.primaryGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         outline: [
           cardVariants.surface.outline,
           cardAnimations.base,
           cardAnimations.borderLight,
           cardAnimations.elevate,
-        ].join(' '),
+        ].join(" "),
         interactive: [
           cardVariants.surface.default,
           cardVariants.interactive.default,
@@ -41,57 +45,57 @@ const cardVariantsCVA = cva(
           cardAnimations.lift,
           cardAnimations.primaryGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         shimmer: [
           cardVariants.surface.elevated,
           cardAnimations.base,
           cardAnimations.shimmer,
           cardAnimations.softDepth,
-        ].join(' '),
+        ].join(" "),
         gradient: [
           cardVariants.surface.gradient,
           cardAnimations.base,
           cardAnimations.lift,
           cardAnimations.multiGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         gradientPrimary: [
           cardVariants.surface.gradientPrimary,
           cardAnimations.base,
           cardAnimations.primaryGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         gradientSecondary: [
           cardVariants.surface.gradientSecondary,
           cardAnimations.base,
           cardAnimations.secondaryGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         gradientMulti: [
           cardVariants.surface.gradientMulti,
           cardAnimations.base,
           cardAnimations.multiGlow,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         gradientWarm: [
           cardVariants.surface.gradientWarm,
           cardAnimations.base,
           cardAnimations.lift,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
         gradientCool: [
           cardVariants.surface.gradientCool,
           cardAnimations.base,
           cardAnimations.lift,
           cardAnimations.innerLight,
-        ].join(' '),
+        ].join(" "),
       },
       size: {
-        sm: "p-3 gap-2 rounded-md max-w-sm",
-        default: "p-6 gap-4 rounded-lg max-w-md",
-        lg: "p-8 gap-5 rounded-xl max-w-lg",
-        xl: "p-10 gap-6 rounded-2xl max-w-xl",
-        full: "p-6 gap-4 rounded-lg w-full max-w-full",
+        sm: "p-3 gap-2 rounded-md",
+        default: "p-6 gap-4 rounded-lg",
+        lg: "p-8 gap-5 rounded-xl",
+        xl: "p-10 gap-6 rounded-2xl",
+        full: "p-6 gap-4 rounded-lg w-full",
       },
       color: {
         default: cardVariants.color.default,
@@ -114,18 +118,30 @@ const cardVariantsCVA = cva(
       state: "default",
     },
   }
-)
+);
 
 export interface CardProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'color'>,
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "color">,
     VariantProps<typeof cardVariantsCVA> {
-  asChild?: boolean
-  skeletonLayout?: "default" | "media" | "avatar" | "product" | "dashboard"
+  asChild?: boolean;
+  skeletonLayout?: "default" | "media" | "avatar" | "product" | "dashboard";
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, size, color, state, asChild = false, skeletonLayout = "default", ...props }, ref) => {
-    const Comp = asChild ? Slot : "div"
+  (
+    {
+      className,
+      variant,
+      size,
+      color,
+      state,
+      asChild = false,
+      skeletonLayout = "default",
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "div";
 
     // Return skeleton when loading
     if (state === "loading") {
@@ -137,20 +153,22 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           className={className}
           {...props}
         />
-      )
+      );
     }
 
     return (
       <Comp
         ref={ref}
         data-slot="card"
-        className={cn(cardVariantsCVA({ variant, size, color, state, className }))}
+        className={cn(
+          cardVariantsCVA({ variant, size, color, state, className })
+        )}
         {...props}
       />
-    )
+    );
   }
-)
-Card.displayName = "Card"
+);
+Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -162,8 +180,8 @@ const CardHeader = React.forwardRef<
     className={cn("flex flex-col space-y-1.5", className)}
     {...props}
   />
-))
-CardHeader.displayName = "CardHeader"
+));
+CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
@@ -178,8 +196,8 @@ const CardTitle = React.forwardRef<
     )}
     {...props}
   />
-))
-CardTitle.displayName = "CardTitle"
+));
+CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -194,8 +212,8 @@ const CardDescription = React.forwardRef<
     )}
     {...props}
   />
-))
-CardDescription.displayName = "CardDescription"
+));
+CardDescription.displayName = "CardDescription";
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
@@ -207,8 +225,8 @@ const CardContent = React.forwardRef<
     className={cn("flex-1", className)}
     {...props}
   />
-))
-CardContent.displayName = "CardContent"
+));
+CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<
   HTMLDivElement,
@@ -217,18 +235,21 @@ const CardFooter = React.forwardRef<
   <div
     ref={ref}
     data-slot="card-footer"
-    className={cn("flex items-center gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-700", className)}
+    className={cn(
+      "flex items-center gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-700",
+      className
+    )}
     {...props}
   />
-))
-CardFooter.displayName = "CardFooter"
+));
+CardFooter.displayName = "CardFooter";
 
 const CardMedia = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    src?: string
-    alt?: string
-    aspectRatio?: "square" | "video" | "wide" | "tall"
+    src?: string;
+    alt?: string;
+    aspectRatio?: "square" | "video" | "wide" | "tall";
   }
 >(({ className, src, alt, aspectRatio = "video", children, ...props }, ref) => {
   const aspectRatioClasses = {
@@ -236,7 +257,7 @@ const CardMedia = React.forwardRef<
     video: "aspect-video",
     wide: "aspect-[16/9]",
     tall: "aspect-[3/4]",
-  }
+  };
 
   if (src) {
     return (
@@ -256,7 +277,7 @@ const CardMedia = React.forwardRef<
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -272,61 +293,78 @@ const CardMedia = React.forwardRef<
     >
       {children}
     </div>
-  )
-})
-CardMedia.displayName = "CardMedia"
+  );
+});
+CardMedia.displayName = "CardMedia";
 
 const CardBadge = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement> & {
-    variant?: "default" | "primary" | "secondary" | "success" | "warning" | "error"
-    position?: "top-right" | "top-left" | "bottom-right" | "bottom-left"
+    variant?:
+      | "default"
+      | "primary"
+      | "secondary"
+      | "success"
+      | "warning"
+      | "error";
+    position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
   }
->(({ className, variant = "default", position = "top-right", ...props }, ref) => {
-  const badgeVariants = {
-    default: "bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300",
-    primary: "bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300",
-    secondary: "bg-secondary-100 text-secondary-700 dark:bg-secondary-900/50 dark:text-secondary-300",
-    success: "bg-success-100 text-success-700 dark:bg-success-900/50 dark:text-success-300",
-    warning: "bg-warning-100 text-warning-700 dark:bg-warning-900/50 dark:text-warning-300",
-    error: "bg-error-100 text-error-700 dark:bg-error-900/50 dark:text-error-300",
-  }
+>(
+  (
+    { className, variant = "default", position = "top-right", ...props },
+    ref
+  ) => {
+    const badgeVariants = {
+      default:
+        "bg-neutral-100 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300",
+      primary:
+        "bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300",
+      secondary:
+        "bg-secondary-100 text-secondary-700 dark:bg-secondary-900/50 dark:text-secondary-300",
+      success:
+        "bg-success-100 text-success-700 dark:bg-success-900/50 dark:text-success-300",
+      warning:
+        "bg-warning-100 text-warning-700 dark:bg-warning-900/50 dark:text-warning-300",
+      error:
+        "bg-error-100 text-error-700 dark:bg-error-900/50 dark:text-error-300",
+    };
 
-  const positionClasses = {
-    "top-right": "top-3 right-3",
-    "top-left": "top-3 left-3",
-    "bottom-right": "bottom-3 right-3",
-    "bottom-left": "bottom-3 left-3",
-  }
+    const positionClasses = {
+      "top-right": "top-3 right-3",
+      "top-left": "top-3 left-3",
+      "bottom-right": "bottom-3 right-3",
+      "bottom-left": "bottom-3 left-3",
+    };
 
-  return (
-    <span
-      ref={ref}
-      data-slot="card-badge"
-      className={cn(
-        "absolute px-2 py-1 text-xs font-medium rounded-full z-10",
-        positionClasses[position],
-        badgeVariants[variant],
-        className
-      )}
-      {...props}
-    />
-  )
-})
-CardBadge.displayName = "CardBadge"
+    return (
+      <span
+        ref={ref}
+        data-slot="card-badge"
+        className={cn(
+          "absolute px-2 py-1 text-xs font-medium rounded-full z-10",
+          positionClasses[position],
+          badgeVariants[variant],
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);
+CardBadge.displayName = "CardBadge";
 
 const CardActions = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
-    justify?: "start" | "center" | "end" | "between"
+    justify?: "start" | "center" | "end" | "between";
   }
 >(({ className, justify = "end", ...props }, ref) => {
   const justifyClasses = {
     start: "justify-start",
-    center: "justify-center", 
+    center: "justify-center",
     end: "justify-end",
     between: "justify-between",
-  }
+  };
 
   return (
     <div
@@ -339,9 +377,9 @@ const CardActions = React.forwardRef<
       )}
       {...props}
     />
-  )
-})
-CardActions.displayName = "CardActions"
+  );
+});
+CardActions.displayName = "CardActions";
 
 export {
   Card,
@@ -353,4 +391,4 @@ export {
   CardMedia,
   CardBadge,
   CardActions,
-}
+};
