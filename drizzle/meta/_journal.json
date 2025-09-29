@@ -8,6 +8,13 @@
       "when": 1758443561439,
       "tag": "0000_perpetual_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759155926961,
+      "tag": "0001_supreme_lilith",
+      "breakpoints": true
     }
   ]
 }
