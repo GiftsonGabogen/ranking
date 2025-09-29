@@ -11,7 +11,9 @@
     "build-storybook": "storybook build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "migrate:json-to-db": "tsx --env-file=.env scripts/migrate-json-to-database.ts",
+    "migrate:json-to-db:dry-run": "tsx --env-file=.env scripts/migrate-json-to-database.ts --dry-run"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
@@ -49,6 +51,7 @@
     "@types/react-dom": "^19",
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
+    "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.4",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
@@ -56,6 +59,7 @@
     "playwright": "^1.55.0",
     "storybook": "9.1.4",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5",
     "vitest": "^3.2.4"
