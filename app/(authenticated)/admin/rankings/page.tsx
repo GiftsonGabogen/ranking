@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,50 +12,46 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
 import { Plus, Edit, Trash2, Settings } from "lucide-react";
+import { RankingForm } from "@/components/admin/RankingForm";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalTrigger,
+} from "@/components/ui/modal";
+import { type RankingFormData } from "@/lib/schemas/ranking";
+import { useAdminRankings } from "../_components/useAdminRankings";
 
-interface List {
-  id: string;
-  authorId: string;
-  title: string;
-  slug: string;
-  description: string;
-  coverImage?: string;
-  category: string;
-  status: "draft" | "published" | "archived";
-  cycleEndDate: string;
-  allowSuggestions: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface AdminRankingsResponse {
-  lists: List[];
-}
+// Simple admin role check - in a real app, this would come from auth context
+const useAdminAuth = () => {
+  // For demo purposes, we'll assume the user is an admin
+  // In a real app, you'd check the user's role from the auth context
+  const isAdmin = true; // This would be: user?.role === 'admin' || user?.isAdmin
+  return { isAdmin };
+};
 
 export default function AdminRankingsPage() {
-  const [lists, setLists] = useState<List[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isAdmin } = useAdminAuth();
+  const {
+    rankings: lists,
+    loading,
+    error,
+    isSubmitting,
+    isModalOpen,
+    editingRanking,
+    fetchRankings,
+    createRanking,
+    updateRanking,
+    deleteRanking,
+    openCreateModal,
+    openEditModal,
+    closeModal,
+  } = useAdminRankings();
 
   useEffect(() => {
-    fetchLists();
-  }, []);
-
-  const fetchLists = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/dummy-data/admin-rankings.json");
-      if (!response.ok) {
-        throw new Error("Failed to fetch rankings");
-      }
-      const data: AdminRankingsResponse = await response.json();
-      setLists(data.lists);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchRankings();
+  }, [fetchRankings]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -78,30 +74,79 @@ export default function AdminRankingsPage() {
     });
   };
 
-  const handleCreate = () => {
-    // TODO: Implement create functionality
-    console.log("Create new ranking");
-  };
+  // Button handlers are now provided by the hook
+  const handleCreate = openCreateModal;
+  const handleEdit = openEditModal;
 
-  const handleEdit = (id: string) => {
-    // TODO: Implement edit functionality
-    console.log("Edit ranking:", id);
+  const handleFormSubmit = async (data: RankingFormData) => {
+    try {
+      if (editingRanking) {
+        // Update existing ranking
+        const updateData = {
+          id: editingRanking.id,
+          ...data,
+        };
+        await updateRanking(updateData);
+      } else {
+        // Create new ranking
+        await createRanking(data);
+      }
+      closeModal();
+      // Refresh the list to get the latest data
+      await fetchRankings();
+    } catch (error) {
+      console.error("Failed to save ranking:", error);
+      alert(error instanceof Error ? error.message : "Failed to save ranking");
+    }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this ranking?")) {
+    const rankingToDelete = lists.find((ranking) => ranking.id === id);
+    if (!rankingToDelete) {
+      console.error("Ranking not found");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to delete "${rankingToDelete.title}"? This action cannot be undone.`
+      )
+    ) {
       return;
     }
 
     try {
-      // TODO: Implement delete functionality
-      console.log("Delete ranking:", id);
-      // For now, just remove from local state
-      setLists(lists.filter((list) => list.id !== id));
+      await deleteRanking(id);
+      console.log(`Successfully deleted "${rankingToDelete.title}"`);
     } catch (err) {
       console.error("Failed to delete ranking:", err);
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete ranking. Please try again."
+      );
     }
   };
+
+  // Admin protection
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-error-600 mb-4">
+                Access Denied
+              </h1>
+              <p className="text-muted-foreground">
+                You don't have permission to access the admin area.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -122,7 +167,7 @@ export default function AdminRankingsPage() {
               <p className="text-error-600 dark:text-error-400 mb-4">
                 Error loading rankings: {error}
               </p>
-              <Button onClick={fetchLists} variant="outline">
+              <Button onClick={fetchRankings} variant="outline">
                 Try Again
               </Button>
             </div>
@@ -173,7 +218,10 @@ export default function AdminRankingsPage() {
                   Published
                 </p>
                 <p className="text-2xl font-bold text-success-600">
-                  {lists.filter((l) => l.status === "published").length}
+                  {
+                    lists.filter((ranking) => ranking.status === "published")
+                      .length
+                  }
                 </p>
               </div>
               <div className="h-3 w-3 rounded-full bg-success-500" />
@@ -188,7 +236,7 @@ export default function AdminRankingsPage() {
                   Draft
                 </p>
                 <p className="text-2xl font-bold text-warning-600">
-                  {lists.filter((l) => l.status === "draft").length}
+                  {lists.filter((ranking) => ranking.status === "draft").length}
                 </p>
               </div>
               <div className="h-3 w-3 rounded-full bg-warning-500" />
@@ -203,7 +251,10 @@ export default function AdminRankingsPage() {
                   Archived
                 </p>
                 <p className="text-2xl font-bold text-neutral-600">
-                  {lists.filter((l) => l.status === "archived").length}
+                  {
+                    lists.filter((ranking) => ranking.status === "archived")
+                      .length
+                  }
                 </p>
               </div>
               <div className="h-3 w-3 rounded-full bg-neutral-500" />
@@ -228,34 +279,34 @@ export default function AdminRankingsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {lists.map((list) => (
+              {lists.map((ranking) => (
                 <div
-                  key={list.id}
+                  key={ranking.id}
                   className="flex items-center justify-between p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-foreground">
-                        {list.title}
+                        {ranking.title}
                       </h3>
                       <Badge
-                        className={getStatusColor(list.status)}
+                        className={getStatusColor(ranking.status)}
                         variant="secondary"
                       >
-                        {list.status}
+                        {ranking.status}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
-                        {list.category}
+                        {ranking.category}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">
-                      {list.description}
+                      {ranking.description}
                     </p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>Created: {formatDate(list.createdAt)}</span>
+                      <span>Created: {formatDate(ranking.createdAt)}</span>
                       <span>
                         Suggestions:{" "}
-                        {list.allowSuggestions ? "Allowed" : "Disabled"}
+                        {ranking.allowSuggestions ? "Allowed" : "Disabled"}
                       </span>
                     </div>
                   </div>
@@ -263,14 +314,14 @@ export default function AdminRankingsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleEdit(list.id)}
+                      onClick={() => handleEdit(ranking)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(list.id)}
+                      onClick={() => handleDelete(ranking.id)}
                       className="text-error-600 hover:text-error-700 hover:bg-error-50"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -282,6 +333,37 @@ export default function AdminRankingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal for Create/Edit */}
+      <Modal open={isModalOpen} onOpenChange={closeModal}>
+        <ModalContent size="2xl">
+          <ModalHeader>
+            <ModalTitle>
+              {editingRanking ? "Edit Ranking" : "Create New Ranking"}
+            </ModalTitle>
+          </ModalHeader>
+          <RankingForm
+            initialData={
+              editingRanking
+                ? {
+                    title: editingRanking.title,
+                    description: editingRanking.description,
+                    isActive: editingRanking.status === "published",
+                    allowSuggestions: editingRanking.allowSuggestions,
+                    cycleLength: Math.ceil(
+                      (new Date(editingRanking.cycleEndDate).getTime() -
+                        Date.now()) /
+                        (24 * 60 * 60 * 1000)
+                    ),
+                  }
+                : undefined
+            }
+            onSubmit={handleFormSubmit}
+            onCancel={closeModal}
+            isLoading={isSubmitting}
+          />
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
