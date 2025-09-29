@@ -22,17 +22,10 @@ import {
 } from "@/components/ui/modal";
 import { type RankingFormData } from "@/lib/schemas/ranking";
 import { useAdminRankings } from "../_components/useAdminRankings";
-
-// Simple admin role check - in a real app, this would come from auth context
-const useAdminAuth = () => {
-  // For demo purposes, we'll assume the user is an admin
-  // In a real app, you'd check the user's role from the auth context
-  const isAdmin = true; // This would be: user?.role === 'admin' || user?.isAdmin
-  return { isAdmin };
-};
+import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
 
 export default function AdminRankingsPage() {
-  const { isAdmin } = useAdminAuth();
+  const { isAdmin, isLoading: authLoading } = useAdminAuth();
   const {
     rankings: lists,
     loading,
@@ -129,6 +122,17 @@ export default function AdminRankingsPage() {
   };
 
   // Admin protection
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Verifying admin access...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAdmin) {
     return (
       <div className="container mx-auto py-8">
@@ -136,11 +140,20 @@ export default function AdminRankingsPage() {
           <CardContent className="p-6">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-error-600 mb-4">
-                Access Denied
+                Admin Access Required
               </h1>
-              <p className="text-muted-foreground">
-                You don't have permission to access the admin area.
+              <p className="text-muted-foreground mb-6">
+                You need administrator privileges to access this page.
               </p>
+              <button
+                onClick={() => {
+                  localStorage.setItem('adminToken', 'demo-admin');
+                  window.location.reload();
+                }}
+                className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Demo Admin Login
+              </button>
             </div>
           </CardContent>
         </Card>

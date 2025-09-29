@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { RankingService } from "@/lib/services/rankingService";
+import { rankingService } from "@/lib/factories/serviceFactory";
 import type { Ranking, CreateRankingDTO, UpdateRankingDTO } from "@/lib/interfaces/rankingInterface";
 
 interface UseAdminRankingsReturn {
@@ -24,7 +24,6 @@ interface UseAdminRankingsReturn {
 
 export function useAdminRankings(): UseAdminRankingsReturn {
   const queryClient = useQueryClient();
-  const [rankingService] = useState(() => new RankingService());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRanking, setEditingRanking] = useState<Ranking | null>(null);
 
@@ -37,7 +36,7 @@ export function useAdminRankings(): UseAdminRankingsReturn {
     queryKey: ["rankings"],
     queryFn: async () => {
       console.log("Hook: Fetching rankings...");
-      const fetchedRankings = await rankingService.getAllRankings();
+      const fetchedRankings = await rankingService().getAllRankings();
       console.log("Hook: Successfully fetched rankings:", fetchedRankings.length);
       return fetchedRankings;
     },
@@ -48,7 +47,7 @@ export function useAdminRankings(): UseAdminRankingsReturn {
   const createRankingMutation = useMutation({
     mutationFn: async (data: CreateRankingDTO) => {
       console.log("Hook: Creating ranking with data:", data);
-      const newRanking = await rankingService.createRanking(data);
+      const newRanking = await rankingService().createRanking(data);
       console.log("Hook: Successfully created ranking:", newRanking.id);
       return newRanking;
     },
@@ -66,7 +65,7 @@ export function useAdminRankings(): UseAdminRankingsReturn {
   const updateRankingMutation = useMutation({
     mutationFn: async (data: UpdateRankingDTO) => {
       console.log("Hook: Updating ranking with data:", data);
-      const updatedRanking = await rankingService.updateRanking(data);
+      const updatedRanking = await rankingService().updateRanking(data);
       console.log("Hook: Successfully updated ranking:", updatedRanking.id);
       return updatedRanking;
     },
@@ -86,7 +85,7 @@ export function useAdminRankings(): UseAdminRankingsReturn {
   const deleteRankingMutation = useMutation({
     mutationFn: async (id: string) => {
       console.log("Hook: Deleting ranking:", id);
-      await rankingService.deleteRanking(id);
+      await rankingService().deleteRanking(id);
       console.log("Hook: Successfully deleted ranking:", id);
       return id;
     },
