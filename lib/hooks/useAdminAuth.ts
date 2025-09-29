@@ -53,11 +53,29 @@ export function useAdminAuth() {
     setIsAdmin(false);
   }, []);
 
+  /**
+   * Get authentication headers for API requests
+   * This ensures all API calls from the admin dashboard include proper authentication
+   */
+  const getAuthHeaders = useCallback(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (adminToken === "demo-admin") {
+      headers['x-local-storage-token'] = "demo-admin";
+    }
+
+    return headers;
+  }, []);
+
   return {
     isAdmin,
     isLoading,
     loginAsAdmin,
     logoutAsAdmin,
     checkAdminStatus,
+    getAuthHeaders,
   };
 }

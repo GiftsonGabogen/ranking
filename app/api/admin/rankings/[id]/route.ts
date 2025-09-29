@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rankingService } from "@/lib/factories/serviceFactory";
+import { applySecurityMiddleware } from "@/lib/middleware/auth";
 
 /**
  * GET /api/admin/rankings/[id]
@@ -14,6 +15,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Apply security middleware
+    const authResult = await applySecurityMiddleware(request);
+    if (authResult) return authResult;
+
     const { id } = params;
     console.log("[AdminRankingsAPI] GET - Retrieving ranking", { id });
 
@@ -87,6 +92,10 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Apply security middleware
+    const authResult = await applySecurityMiddleware(request);
+    if (authResult) return authResult;
+
     const { id } = params;
     console.log("[AdminRankingsAPI] PUT - Updating ranking", { id });
 
@@ -189,6 +198,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Apply security middleware
+    const authResult = await applySecurityMiddleware(request);
+    if (authResult) return authResult;
+
     const { id } = params;
     console.log("[AdminRankingsAPI] DELETE - Deleting ranking", { id });
 

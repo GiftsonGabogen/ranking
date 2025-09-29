@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rankingService } from "@/lib/factories/serviceFactory";
+import { applySecurityMiddleware } from "@/lib/middleware/auth";
 
 /**
  * GET /api/admin/rankings
@@ -13,6 +14,10 @@ import { rankingService } from "@/lib/factories/serviceFactory";
  */
 export async function GET(request: NextRequest) {
   try {
+    // Apply security middleware
+    const authResult = await applySecurityMiddleware(request);
+    if (authResult) return authResult;
+
     console.log("[AdminRankingsAPI] GET - Retrieving all rankings");
 
     // Get search parameters from URL
@@ -81,6 +86,10 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Apply security middleware
+    const authResult = await applySecurityMiddleware(request);
+    if (authResult) return authResult;
+
     console.log("[AdminRankingsAPI] POST - Creating new ranking");
 
     const body = await request.json();

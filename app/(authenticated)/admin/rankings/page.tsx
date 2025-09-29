@@ -18,7 +18,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalTitle,
-  ModalTrigger,
 } from "@/components/ui/modal";
 import { type RankingFormData } from "@/lib/schemas/ranking";
 import { useAdminRankings } from "../_components/useAdminRankings";
@@ -85,8 +84,7 @@ export default function AdminRankingsPage() {
         await createRanking(data);
       }
       closeModal();
-      // Refresh the list to get the latest data
-      await fetchRankings();
+      // No need to manually fetch - React Query handles cache updates automatically
     } catch (error) {
       console.error("Failed to save ranking:", error);
       alert(error instanceof Error ? error.message : "Failed to save ranking");
