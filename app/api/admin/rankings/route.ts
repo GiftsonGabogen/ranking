@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rankingService } from "@/lib/factories/serviceFactory";
-import { applySecurityMiddleware } from "@/lib/middleware/auth";
+import { applySecurityMiddleware, getAuthenticatedUserId } from "@/lib/middleware/auth";
 
 /**
  * GET /api/admin/rankings
@@ -130,13 +130,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get authenticated user ID
+    const authorId = getAuthenticatedUserId(request);
+    if (!authorId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Authentication required",
+          message: "Unable to determine authenticated user"
+        },
+        { status: 401 }
+      );
+    }
+
     // Create new ranking through service layer
     const newRanking = await rankingService().createRanking({
       title,
       description,
       isActive: isActive || false,
       allowSuggestions: allowSuggestions || false,
-      cycleLength: cycleLength || 30
+      cycleLength: cycleLength || 30,
+      authorId
     });
 
     console.log("[AdminRankingsAPI] Ranking created successfully", {

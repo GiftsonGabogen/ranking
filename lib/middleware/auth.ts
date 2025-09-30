@@ -14,6 +14,26 @@ const ADMIN_USERS = [
   { id: "admin-2", email: "superadmin@example.com", role: "superadmin" }
 ];
 
+/**
+ * Get authenticated user ID from request
+ * Returns the user ID if authenticated, null otherwise
+ */
+export function getAuthenticatedUserId(request: NextRequest): string | null {
+  const adminToken = request.headers.get("x-admin-token");
+  const sessionCookie = request.cookies.get("admin-session");
+  const localStorageToken = request.headers.get("x-local-storage-token");
+
+  // For demo purposes, return the existing user ID from the database
+  // This user ID exists in the database from the migration script
+  if (adminToken === DEMO_ADMIN_TOKEN ||
+      sessionCookie?.value === "admin-session-value" ||
+      localStorageToken === "demo-admin") {
+    return "oFHuXdFnQKHgHEOdAs9qdDJNg9iWdpA0"; // Existing user ID from database
+  }
+
+  return null;
+}
+
 // Demo authentication token (in production, use JWT or similar)
 const DEMO_ADMIN_TOKEN = "demo-admin-token";
 

@@ -29,7 +29,7 @@ export class RankingRepository implements IRankingRepository {
     // For now, we'll simulate the creation and return a mock object
     const newRanking: Ranking = {
       id: Date.now().toString(),
-      authorId: "admin-user-1",
+      authorId: data.authorId,
       slug: data.title
         .toLowerCase()
         .replace(/\s+/g, "-")

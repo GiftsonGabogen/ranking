@@ -21,6 +21,7 @@ export interface CreateRankingDTO {
   isActive: boolean;
   allowSuggestions: boolean;
   cycleLength: number;
+  authorId: string;
 }
 
 export interface UpdateRankingDTO extends Partial<CreateRankingDTO> {

@@ -23,7 +23,7 @@ export class DatabaseRepository implements IRankingRepository {
       // Map DTO to database schema
       const newRanking = {
         id: crypto.randomUUID(),
-        authorId: "system", // TODO: Get from auth context
+        authorId: data.authorId,
         title: data.title,
         slug,
         description: data.description,
