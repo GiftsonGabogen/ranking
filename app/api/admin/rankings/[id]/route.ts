@@ -12,23 +12,23 @@ import { applySecurityMiddleware } from "@/lib/middleware/auth";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/admin/rankings/[id]">
 ) {
+  const { id } = await ctx.params;
   try {
     // Apply security middleware
     const authResult = await applySecurityMiddleware(request);
     if (authResult) return authResult;
 
-    const { id } = params;
     console.log("[AdminRankingsAPI] GET - Retrieving ranking", { id });
 
     // Validate ID format
-    if (!id || typeof id !== 'string') {
+    if (!id || typeof id !== "string") {
       return NextResponse.json(
         {
           success: false,
           error: "Invalid ranking ID",
-          message: "A valid ranking ID is required"
+          message: "A valid ranking ID is required",
         },
         { status: 400 }
       );
@@ -43,7 +43,7 @@ export async function GET(
         {
           success: false,
           error: "Ranking not found",
-          message: `No ranking found with id: ${id}`
+          message: `No ranking found with id: ${id}`,
         },
         { status: 404 }
       );
@@ -51,21 +51,24 @@ export async function GET(
 
     console.log("[AdminRankingsAPI] Ranking retrieved successfully", {
       id,
-      title: ranking.title
+      title: ranking.title,
     });
 
     return NextResponse.json({
       success: true,
-      data: ranking
+      data: ranking,
     });
-
   } catch (error) {
-    console.error("[AdminRankingsAPI] Failed to retrieve ranking", { error, id: params.id });
+    console.error("[AdminRankingsAPI] Failed to retrieve ranking", {
+      error,
+      id,
+    });
     return NextResponse.json(
       {
         success: false,
         error: "Failed to retrieve ranking",
-        message: error instanceof Error ? error.message : "Unknown error occurred"
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       },
       { status: 500 }
     );
@@ -89,30 +92,31 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/admin/rankings/[id]">
 ) {
+  const { id } = await ctx.params;
   try {
     // Apply security middleware
     const authResult = await applySecurityMiddleware(request);
     if (authResult) return authResult;
 
-    const { id } = params;
     console.log("[AdminRankingsAPI] PUT - Updating ranking", { id });
 
     // Validate ID format
-    if (!id || typeof id !== 'string') {
+    if (!id || typeof id !== "string") {
       return NextResponse.json(
         {
           success: false,
           error: "Invalid ranking ID",
-          message: "A valid ranking ID is required"
+          message: "A valid ranking ID is required",
         },
         { status: 400 }
       );
     }
 
     const body = await request.json();
-    const { title, description, isActive, allowSuggestions, cycleLength } = body;
+    const { title, description, isActive, allowSuggestions, cycleLength } =
+      body;
 
     // Check if ranking exists before updating
     const existingRanking = await rankingService().getRankingById(id);
@@ -122,7 +126,7 @@ export async function PUT(
         {
           success: false,
           error: "Ranking not found",
-          message: `No ranking found with id: ${id}`
+          message: `No ranking found with id: ${id}`,
         },
         { status: 404 }
       );
@@ -134,7 +138,7 @@ export async function PUT(
         {
           success: false,
           error: "Invalid title length",
-          message: "Title must be less than 100 characters"
+          message: "Title must be less than 100 characters",
         },
         { status: 400 }
       );
@@ -145,7 +149,7 @@ export async function PUT(
         {
           success: false,
           error: "Invalid description length",
-          message: "Description must be less than 500 characters"
+          message: "Description must be less than 500 characters",
         },
         { status: 400 }
       );
@@ -158,27 +162,30 @@ export async function PUT(
       description,
       isActive,
       allowSuggestions,
-      cycleLength
+      cycleLength,
     });
 
     console.log("[AdminRankingsAPI] Ranking updated successfully", {
       id,
-      title: updatedRanking.title
+      title: updatedRanking.title,
     });
 
     return NextResponse.json({
       success: true,
       data: updatedRanking,
-      message: "Ranking updated successfully"
+      message: "Ranking updated successfully",
     });
-
   } catch (error) {
-    console.error("[AdminRankingsAPI] Failed to update ranking", { error, id: params.id });
+    console.error("[AdminRankingsAPI] Failed to update ranking", {
+      error,
+      id,
+    });
     return NextResponse.json(
       {
         success: false,
         error: "Failed to update ranking",
-        message: error instanceof Error ? error.message : "Unknown error occurred"
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       },
       { status: 500 }
     );
@@ -195,23 +202,23 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/admin/rankings/[id]">
 ) {
+  const { id } = await ctx.params;
   try {
     // Apply security middleware
     const authResult = await applySecurityMiddleware(request);
     if (authResult) return authResult;
 
-    const { id } = params;
     console.log("[AdminRankingsAPI] DELETE - Deleting ranking", { id });
 
     // Validate ID format
-    if (!id || typeof id !== 'string') {
+    if (!id || typeof id !== "string") {
       return NextResponse.json(
         {
           success: false,
           error: "Invalid ranking ID",
-          message: "A valid ranking ID is required"
+          message: "A valid ranking ID is required",
         },
         { status: 400 }
       );
@@ -225,7 +232,7 @@ export async function DELETE(
         {
           success: false,
           error: "Ranking not found",
-          message: `No ranking found with id: ${id}`
+          message: `No ranking found with id: ${id}`,
         },
         { status: 404 }
       );
@@ -238,16 +245,19 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "Ranking deleted successfully"
+      message: "Ranking deleted successfully",
     });
-
   } catch (error) {
-    console.error("[AdminRankingsAPI] Failed to delete ranking", { error, id: params.id });
+    console.error("[AdminRankingsAPI] Failed to delete ranking", {
+      error,
+      id,
+    });
     return NextResponse.json(
       {
         success: false,
         error: "Failed to delete ranking",
-        message: error instanceof Error ? error.message : "Unknown error occurred"
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       },
       { status: 500 }
     );

@@ -127,7 +127,6 @@ export class DatabaseRepository implements IRankingRepository {
             Date.now() + data.cycleLength * 24 * 60 * 60 * 1000
           ).toISOString(),
         }),
-        updatedAt: new Date().toISOString(),
       };
 
       const [result] = await db
