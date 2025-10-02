@@ -1,0 +1,276 @@
+{
+  "items": [
+    {
+      "id": "item-1",
+      "rankingId": "1",
+      "title": "Elden Ring",
+      "description": "FromSoftware's masterpiece open-world action RPG that redefined the genre with its vast interconnected world and challenging combat.",
+      "imageUrl": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop",
+      "metadata": {
+        "developer": "FromSoftware",
+        "platform": "PC, PS5, Xbox Series X/S",
+        "releaseYear": "2022",
+        "genre": "Action RPG"
+      },
+      "position": 1,
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-20T14:45:00Z"
+    },
+    {
+      "id": "item-2",
+      "rankingId": "1",
+      "title": "The Legend of Zelda: Tears of the Kingdom",
+      "description": "Nintendo's epic sequel that builds upon Breath of the Wild with innovative physics-based mechanics and sky islands exploration.",
+      "imageUrl": "https://images.unsplash.com/photo-1511880200561-1eb599c95078?w=400&h=300&fit=crop",
+      "metadata": {
+        "developer": "Nintendo",
+        "platform": "Nintendo Switch",
+        "releaseYear": "2023",
+        "genre": "Action Adventure"
+      },
+      "position": 2,
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-20T14:45:00Z"
+    },
+    {
+      "id": "item-3",
+      "rankingId": "1",
+      "title": "Baldur's Gate 3",
+      "description": "Larian Studios' groundbreaking RPG that sets new standards for player choice, storytelling, and turn-based combat.",
+      "imageUrl": "https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?w=400&h=300&fit=crop",
+      "metadata": {
+        "developer": "Larian Studios",
+        "platform": "PC, PS5",
+        "releaseYear": "2023",
+        "genre": "RPG"
+      },
+      "position": 3,
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-20T14:45:00Z"
+    },
+    {
+      "id": "item-4",
+      "rankingId": "1",
+      "title": "Marvel's Spider-Man 2",
+      "description": "Insomniac's spectacular superhero adventure featuring Peter Parker and Miles Morales in an expanded New York City.",
+      "imageUrl": "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop",
+      "metadata": {
+        "developer": "Insomniac Games",
+        "platform": "PS5",
+        "releaseYear": "2023",
+        "genre": "Action Adventure"
+      },
+      "position": 4,
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-20T14:45:00Z"
+    },
+    {
+      "id": "item-5",
+      "rankingId": "1",
+      "title": "Starfield",
+      "description": "Bethesda's ambitious space exploration RPG featuring over 1000 planets and unprecedented freedom in cosmic adventure.",
+      "imageUrl": "https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=400&h=300&fit=crop",
+      "metadata": {
+        "developer": "Bethesda Game Studios",
+        "platform": "PC, Xbox Series X/S",
+        "releaseYear": "2023",
+        "genre": "Action RPG"
+      },
+      "position": 5,
+      "createdAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-20T14:45:00Z"
+    },
+    {
+      "id": "item-6",
+      "rankingId": "2",
+      "title": "The Godfather",
+      "description": "Francis Ford Coppola's masterpiece that defines the gangster genre and features arguably the greatest performances in cinema history.",
+      "imageUrl": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&h=300&fit=crop",
+      "metadata": {
+        "director": "Francis Ford Coppola",
+        "year": "1972",
+        "genre": "Crime Drama",
+        "runtime": "175 minutes"
+      },
+      "position": 1,
+      "createdAt": "2025-01-10T09:15:00Z",
+      "updatedAt": "2025-01-18T16:20:00Z"
+    },
+    {
+      "id": "item-7",
+      "rankingId": "2",
+      "title": "The Shawshank Redemption",
+      "description": "Frank Darabont's powerful prison drama about hope, friendship, and redemption that resonates with audiences worldwide.",
+      "imageUrl": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&h=300&fit=crop",
+      "metadata": {
+        "director": "Frank Darabont",
+        "year": "1994",
+        "genre": "Drama",
+        "runtime": "142 minutes"
+      },
+      "position": 2,
+      "createdAt": "2025-01-10T09:15:00Z",
+      "updatedAt": "2025-01-18T16:20:00Z"
+    },
+    {
+      "id": "item-8",
+      "rankingId": "2",
+      "title": "Citizen Kane",
+      "description": "Orson Welles' revolutionary film that pioneered cinematographic techniques and narrative structure that still influence cinema today.",
+      "imageUrl": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&h=300&fit=crop",
+      "metadata": {
+        "director": "Orson Welles",
+        "year": "1941",
+        "genre": "Drama",
+        "runtime": "119 minutes"
+      },
+      "position": 3,
+      "createdAt": "2025-01-10T09:15:00Z",
+      "updatedAt": "2025-01-18T16:20:00Z"
+    },
+    {
+      "id": "item-9",
+      "rankingId": "3",
+      "title": "Python",
+      "description": "Versatile, beginner-friendly language with extensive libraries and frameworks for web development, data science, AI, and automation.",
+      "imageUrl": "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=300&fit=crop",
+      "metadata": {
+        "paradigm": "Multi-paradigm",
+        "typicalUse": "Web Dev, Data Science, AI",
+        "learningCurve": "Easy",
+        "popularity": "#1 in TIOBE Index 2024"
+      },
+      "position": 1,
+      "createdAt": "2025-01-08T13:45:00Z",
+      "updatedAt": "2025-01-12T11:30:00Z"
+    },
+    {
+      "id": "item-10",
+      "rankingId": "3",
+      "title": "JavaScript",
+      "description": "Essential web development language that powers interactive frontends and increasingly serves backend needs through Node.js.",
+      "imageUrl": "https://images.unsplash.com/photo-1579403124614-197f69d8187b?w=400&h=300&fit=crop",
+      "metadata": {
+        "paradigm": "Multi-paradigm",
+        "typicalUse": "Web Development, Mobile Apps",
+        "learningCurve": "Easy to Medium",
+        "popularity": "#2 in TIOBE Index 2024"
+      },
+      "position": 2,
+      "createdAt": "2025-01-08T13:45:00Z",
+      "updatedAt": "2025-01-12T11:30:00Z"
+    },
+    {
+      "id": "item-11",
+      "rankingId": "4",
+      "title": "Apple",
+      "description": "Revolutionary technology company that consistently redefines consumer electronics with iPhone, Mac, and innovative services.",
+      "imageUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+      "metadata": {
+        "industry": "Consumer Electronics",
+        "founded": "1976",
+        "marketCap": "$3 Trillion+",
+        "innovationAreas": "Smartphones, Computers, Wearables"
+      },
+      "position": 1,
+      "createdAt": "2025-01-05T16:20:00Z",
+      "updatedAt": "2025-01-15T09:30:00Z"
+    },
+    {
+      "id": "item-12",
+      "rankingId": "4",
+      "title": "Microsoft",
+      "description": "Software giant that transformed personal computing and now leads in cloud computing, enterprise software, and gaming.",
+      "imageUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop",
+      "metadata": {
+        "industry": "Software, Cloud Computing",
+        "founded": "1975",
+        "marketCap": "$2.8 Trillion+",
+        "innovationAreas": "Cloud OS, AI, Gaming"
+      },
+      "position": 2,
+      "createdAt": "2025-01-05T16:20:00Z",
+      "updatedAt": "2025-01-15T09:30:00Z"
+    },
+    {
+      "id": "item-13",
+      "rankingId": "5",
+      "title": "Kyoto, Japan",
+      "description": "Ancient capital featuring thousands of temples, traditional gardens, geisha districts, and perfectly preserved historic architecture.",
+      "imageUrl": "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
+      "metadata": {
+        "country": "Japan",
+        "bestTimeToVisit": "Spring (Cherry blossoms) & Fall",
+        "highlights": "Fushimi Inari, Kinkaku-ji, Gion",
+        "culture": "Traditional Japanese"
+      },
+      "position": 1,
+      "createdAt": "2025-01-03T11:45:00Z",
+      "updatedAt": "2025-01-10T14:20:00Z"
+    },
+    {
+      "id": "item-14",
+      "rankingId": "5",
+      "title": "Santorini, Greece",
+      "description": "Stunning Greek island with dramatic cliffs, white-washed buildings, blue-domed churches, and breathtaking sunsets over the Aegean.",
+      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "metadata": {
+        "country": "Greece",
+        "bestTimeToVisit": "Late Spring to Early Fall",
+        "highlights": "Oia sunset, Red Beach, Wine tours",
+        "culture": "Mediterranean"
+      },
+      "position": 2,
+      "createdAt": "2025-01-03T11:45:00Z",
+      "updatedAt": "2025-01-10T14:20:00Z"
+    },
+    {
+      "id": "item-15",
+      "rankingId": "6",
+      "title": "Michael Jordan",
+      "description": "Basketball legend who transformed the NBA with his unmatched competitiveness, athleticism, and global cultural impact.",
+      "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      "metadata": {
+        "sport": "Basketball",
+        "achievements": "6x NBA Champion, 5x MVP",
+        "careerSpan": "1984-2003",
+        "legacy": "Global icon, changed sports marketing"
+      },
+      "position": 1,
+      "createdAt": "2025-01-01T08:30:00Z",
+      "updatedAt": "2025-01-08T12:15:00Z"
+    },
+    {
+      "id": "item-16",
+      "rankingId": "7",
+      "title": "Breaking Bad",
+      "description": "AMC's gritty drama about a high school teacher turned meth kingpin, featuring exceptional writing and character development.",
+      "imageUrl": "https://images.unsplash.com/photo-1593482568759-f1ae272e3869?w=400&h=300&fit=crop",
+      "metadata": {
+        "platform": "AMC/Netflix",
+        "years": "2008-2013",
+        "genre": "Crime Drama",
+        "episodes": "62 episodes over 5 seasons"
+      },
+      "position": 1,
+      "createdAt": "2023-12-28T15:45:00Z",
+      "updatedAt": "2025-01-05T10:30:00Z"
+    },
+    {
+      "id": "item-17",
+      "rankingId": "8",
+      "title": "The Beatles",
+      "description": "Revolutionary band that transformed popular music and culture with their innovative songwriting and studio experimentation.",
+      "imageUrl": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&h=300&fit=crop",
+      "metadata": {
+        "genre": "Rock/Pop",
+        "activeYears": "1960-1970",
+        "origin": "Liverpool, England",
+        "impact": "Changed popular music forever"
+      },
+      "position": 1,
+      "createdAt": "2023-12-25T13:20:00Z",
+      "updatedAt": "2025-01-02T16:45:00Z"
+    }
+  ]
+}
