@@ -2,6 +2,23 @@
 
 import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +39,7 @@ import {
   Eye
 } from "lucide-react";
 import { ItemForm } from "@/components/admin/ItemForm";
+import { SortableItem } from "@/components/admin/SortableItem";
 import {
   Modal,
   ModalContent,
@@ -37,6 +55,7 @@ import { PageLoading } from "@/components/admin/shared/PageLoading";
 import { ToastContainer } from "@/components/admin/shared/ToastContainer";
 import { formatDate } from "@/components/admin/shared/DateUtils";
 import { useAdminForm } from "@/lib/hooks/useAdminForm";
+import type { RankingItem } from "@/lib/interfaces/rankingInterface";
 
 export default function ItemsManagementPage() {
   const params = useParams();
@@ -63,6 +82,29 @@ export default function ItemsManagementPage() {
   } = useAdminItems(rankingId);
 
   const { isSubmitting, handleSubmit } = useAdminForm<ItemFormData>();
+
+  // Drag and drop setup
+  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [draggedItem, setDraggedItem] = React.useState<RankingItem | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const sortedItems = [...items].sort((a, b) => a.position - b.position);
+
+  // Debug logging to track items state
+  useEffect(() => {
+    console.log('UI: Items updated:', items.map(i => ({ id: i.id, position: i.position, title: i.title })));
+    console.log('UI: Sorted items:', sortedItems.map(i => ({ id: i.id, position: i.position, title: i.title })));
+  }, [items, sortedItems]);
 
   useEffect(() => {
     if (rankingId) {
@@ -101,30 +143,82 @@ export default function ItemsManagementPage() {
     await deleteItem(id);
   };
 
-  const handleMoveUp = async (item: { id: string; position: number }) => {
+  // Drag event handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const item = items.find(i => i.id === active.id);
+    setActiveId(active.id as string);
+    setDraggedItem(item || null);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!active || !over) {
+      setActiveId(null);
+      setDraggedItem(null);
+      return;
+    }
+
+    if (active.id !== over.id) {
+      const oldIndex = sortedItems.findIndex(item => item.id === active.id);
+      const newIndex = sortedItems.findIndex(item => item.id === over.id);
+
+      console.log('Drag End:', {
+        activeId: active.id,
+        overId: over.id,
+        oldIndex,
+        newIndex,
+        sortedItems: sortedItems.map(i => ({ id: i.id, position: i.position }))
+      });
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newItems = arrayMove(sortedItems, oldIndex, newIndex);
+        const newItemIds = newItems.map(item => item.id);
+
+        console.log('Drag End - New order:', newItemIds);
+        console.log('Drag End - New items with positions:', newItems.map(i => ({ id: i.id, position: i.position })));
+
+        await reorderItems(rankingId, newItemIds);
+      }
+    }
+
+    setActiveId(null);
+    setDraggedItem(null);
+  };
+
+  const handleMoveUp = async (item: RankingItem) => {
     if (item.position <= 1) return;
 
     const itemAbove = items.find(i => i.position === item.position - 1);
     if (!itemAbove) return;
 
-    await reorderItems(rankingId, [
-      ...items.filter(i => i.id !== item.id && i.id !== itemAbove.id).map(i => i.id),
-      itemAbove.id,
-      item.id,
-    ]);
+    // Create the new order by swapping the two items while preserving order of others
+    const newOrder = sortedItems.map(i => {
+      if (i.id === item.id) return itemAbove.id;
+      if (i.id === itemAbove.id) return item.id;
+      return i.id;
+    });
+
+    console.log('Move Up - New order:', newOrder);
+    await reorderItems(rankingId, newOrder);
   };
 
-  const handleMoveDown = async (item: { id: string; position: number }) => {
+  const handleMoveDown = async (item: RankingItem) => {
     if (item.position >= items.length) return;
 
     const itemBelow = items.find(i => i.position === item.position + 1);
     if (!itemBelow) return;
 
-    await reorderItems(rankingId, [
-      ...items.filter(i => i.id !== item.id && i.id !== itemBelow.id).map(i => i.id),
-      item.id,
-      itemBelow.id,
-    ]);
+    // Create the new order by swapping the two items while preserving order of others
+    const newOrder = sortedItems.map(i => {
+      if (i.id === item.id) return itemBelow.id;
+      if (i.id === itemBelow.id) return item.id;
+      return i.id;
+    });
+
+    console.log('Move Down - New order:', newOrder);
+    await reorderItems(rankingId, newOrder);
   };
 
   if (loading) {
@@ -240,84 +334,49 @@ export default function ItemsManagementPage() {
                 <Button onClick={openCreateModal}>Add Your First Item</Button>
               </div>
             ) : (
-              <div className="space-y-3">
-                {items.sort((a, b) => a.position - b.position).map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
-                  >
-                    <div className="flex items-center gap-4 flex-1">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={sortedItems.map(item => item.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-3">
+                    {sortedItems.map((item) => (
+                      <SortableItem
+                        key={item.id}
+                        item={item}
+                        onEdit={openEditModal}
+                        onDelete={handleDelete}
+                        onMoveUp={handleMoveUp}
+                        onMoveDown={handleMoveDown}
+                        totalItems={items.length}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+                <DragOverlay>
+                  {activeId && draggedItem ? (
+                    <div className="flex items-center gap-4 p-4 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-xl opacity-90">
                       <div className="flex items-center gap-2">
-                        <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                        <GripVertical className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-medium text-muted-foreground w-8">
-                          #{item.position}
+                          #{draggedItem.position}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-foreground">
-                            {item.title}
-                          </h3>
-                          {item.imageUrl && (
-                            <Badge variant="outline" className="text-xs">
-                              Has Image
-                            </Badge>
-                          )}
-                          {item.metadata && Object.keys(item.metadata).length > 0 && (
-                            <Badge variant="outline" className="text-xs">
-                              {Object.keys(item.metadata).length} Metadata Fields
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                          {item.description}
+                        <h3 className="font-semibold text-foreground">{draggedItem.title}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {draggedItem.description}
                         </p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span>Updated: {formatDate(item.updatedAt)}</span>
-                          {item.metadata && (
-                            <span>
-                              Metadata: {Object.keys(item.metadata).join(', ')}
-                            </span>
-                          )}
-                        </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleMoveUp(item)}
-                        disabled={item.position <= 1}
-                      >
-                        <MoveUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleMoveDown(item)}
-                        disabled={item.position >= items.length}
-                      >
-                        <MoveDown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditModal(item)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                        className="text-error-600 hover:text-error-700 hover:bg-error-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
             )}
           </CardContent>
         </Card>

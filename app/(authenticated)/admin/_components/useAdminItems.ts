@@ -96,11 +96,28 @@ const reorderItems = async (rankingId: string, itemIds: string[]): Promise<{ suc
       throw new Error(currentItemsResponse.error);
     }
 
-    const reorderedItems = currentItemsResponse.data.map((item, index) => ({
-      ...item,
-      position: index + 1,
-      updatedAt: new Date().toISOString(),
-    }));
+    // Create a map of current items by ID for efficient lookup
+    const itemsMap = currentItemsResponse.data.reduce((map, item) => {
+      map[item.id] = item;
+      return map;
+    }, {} as Record<string, RankingItem>);
+
+    // Create reordered items with updated positions
+    const reorderedItems = itemIds.map((itemId, index) => {
+      const item = itemsMap[itemId];
+      if (!item) {
+        throw new Error(`Item with ID ${itemId} not found`);
+      }
+      const updatedItem = {
+        ...item,
+        position: index + 1,
+        updatedAt: new Date().toISOString(),
+      };
+      console.log(`Hook: Item ${itemId} - Old position: ${item.position}, New position: ${updatedItem.position}`);
+      return updatedItem;
+    });
+
+    console.log('Hook: Reordered items with new positions:', reorderedItems);
 
     return { success: true, data: reorderedItems };
   } catch (error) {
@@ -283,16 +300,23 @@ export function useAdminItems(rankingId: string): UseAdminItemsReturn {
       return result.data;
     },
     onSuccess: (reorderedItems) => {
+      console.log("Hook: Updating cache with reordered items:", reorderedItems);
       queryClient.setQueryData(["items", rankingId], (oldResponse: ItemsResponse | undefined) => {
-        return {
+        console.log("Hook: Previous cache data:", oldResponse);
+        const newResponse = {
           ...oldResponse!,
           data: reorderedItems
         };
+        console.log("Hook: New cache data:", newResponse);
+        return newResponse;
       });
+      // Don't invalidate the query - we want to keep the reordered data
+      // The cache update is sufficient for re-rendering
     },
     onError: (err: Error) => {
       const errorMessage = err.message || "Failed to reorder items";
       console.error("Hook: Error reordering items:", err);
+      // Note: In a real implementation, you would show a toast notification here
       throw new Error(errorMessage);
     },
   });
