@@ -22,9 +22,11 @@ import {
 import { type RankingFormData } from "@/lib/schemas/ranking";
 import { useAdminRankings } from "../_components/useAdminRankings";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
+import { useSession } from "@/lib/auth-client";
 
 export default function AdminRankingsPage() {
   const { isAdmin, isLoading: authLoading } = useAdminAuth();
+  const { data: session } = useSession();
   const {
     rankings: lists,
     loading,
@@ -80,8 +82,15 @@ export default function AdminRankingsPage() {
         };
         await updateRanking(updateData);
       } else {
-        // Create new ranking
-        await createRanking(data);
+        // Create new ranking - use real user ID from better-auth session
+        if (!session?.user?.id) {
+          throw new Error("User not authenticated");
+        }
+        const createData = {
+          ...data,
+          authorId: session.user.id,
+        };
+        await createRanking(createData);
       }
       closeModal();
       // No need to manually fetch - React Query handles cache updates automatically
@@ -359,6 +368,8 @@ export default function AdminRankingsPage() {
                 ? {
                     title: editingRanking.title,
                     description: editingRanking.description,
+                    coverImage: editingRanking.coverImage || "",
+                    category: editingRanking.category,
                     isActive: editingRanking.status === "published",
                     allowSuggestions: editingRanking.allowSuggestions,
                     cycleLength: Math.ceil(

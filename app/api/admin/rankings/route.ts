@@ -186,6 +186,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new ranking through service layer
+    // Using the proper authorId from better-auth session provided by client
     const newRanking = await rankingService().createRanking({
       title,
       description,
