@@ -6,7 +6,8 @@ import { Input, FormField } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Loading } from "@/components/ui/loading";
-import { X, Type, FileText, Calendar } from "lucide-react";
+import { Select, type SelectOption } from "@/components/ui/select";
+import { X, Type, FileText, Calendar, Image, FolderOpen } from "lucide-react";
 import { rankingSchema, type RankingFormData } from "@/lib/schemas/ranking";
 
 interface RankingFormProps {
@@ -15,6 +16,21 @@ interface RankingFormProps {
   onCancel: () => void;
   isLoading?: boolean;
 }
+
+const categoryOptions: SelectOption[] = [
+  { value: "general", label: "General" },
+  { value: "gaming", label: "Gaming" },
+  { value: "movies", label: "Movies" },
+  { value: "music", label: "Music" },
+  { value: "sports", label: "Sports" },
+  { value: "technology", label: "Technology" },
+  { value: "business", label: "Business" },
+  { value: "entertainment", label: "Entertainment" },
+  { value: "travel", label: "Travel" },
+  { value: "food", label: "Food" },
+  { value: "lifestyle", label: "Lifestyle" },
+  { value: "education", label: "Education" },
+];
 
 export function RankingForm({ initialData, onSubmit, onCancel, isLoading = false }: RankingFormProps) {
   const {
@@ -30,6 +46,8 @@ export function RankingForm({ initialData, onSubmit, onCancel, isLoading = false
     defaultValues: {
       title: initialData?.title || "",
       description: initialData?.description || "",
+      coverImage: initialData?.coverImage || "",
+      category: initialData?.category || "general",
       isActive: initialData?.isActive ?? true,
       allowSuggestions: initialData?.allowSuggestions ?? true,
       cycleLength: initialData?.cycleLength || 30,
@@ -38,6 +56,7 @@ export function RankingForm({ initialData, onSubmit, onCancel, isLoading = false
 
   const isActive = watch("isActive");
   const allowSuggestions = watch("allowSuggestions");
+  const category = watch("category");
 
   const onFormSubmit: SubmitHandler<RankingFormData> = async (data) => {
     try {
@@ -97,6 +116,33 @@ export function RankingForm({ initialData, onSubmit, onCancel, isLoading = false
             `}
           />
         </FormField>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField label="Cover Image URL" error={errors.coverImage?.message}>
+            <Input
+              {...register("coverImage")}
+              type="url"
+              placeholder="https://example.com/image.jpg"
+              disabled={isSubmitting || isLoading}
+              variant={errors.coverImage ? "destructive" : "default"}
+              isInvalid={!!errors.coverImage}
+              leftIcon={<Image className="h-4 w-4" />}
+              rightIcon={errors.coverImage ? <X className="h-4 w-4" /> : undefined}
+            />
+          </FormField>
+
+          <FormField label="Category" error={errors.category?.message}>
+            <Select
+              options={categoryOptions}
+              value={category}
+              onValueChange={(value) => setValue("category", value)}
+              placeholder="Select a category"
+              disabled={isSubmitting || isLoading}
+              leftIcon={<FolderOpen className="h-4 w-4" />}
+              isInvalid={!!errors.category}
+            />
+          </FormField>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">

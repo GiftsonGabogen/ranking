@@ -18,6 +18,8 @@ export interface Ranking {
 export interface CreateRankingDTO {
   title: string;
   description: string;
+  coverImage?: string;
+  category: string;
   isActive: boolean;
   allowSuggestions: boolean;
   cycleLength: number;
