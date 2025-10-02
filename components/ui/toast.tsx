@@ -212,7 +212,7 @@ const ToastContainer = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "z-toast pointer-events-none flex max-w-sm flex-col-reverse gap-2",
+        "z-[9999] pointer-events-none flex max-w-sm flex-col-reverse gap-2",
         positionClasses[position],
         className
       )}

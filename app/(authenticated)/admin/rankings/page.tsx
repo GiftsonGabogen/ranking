@@ -11,6 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
+import {
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastContainer,
+} from "@/components/ui/toast";
 import { Plus, Edit, Trash2, Settings } from "lucide-react";
 import { RankingForm } from "@/components/admin/RankingForm";
 import {
@@ -23,10 +29,12 @@ import { type RankingFormData } from "@/lib/schemas/ranking";
 import { useAdminRankings } from "../_components/useAdminRankings";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
 import { useSession } from "@/lib/auth-client";
+import { useToast, type ToastState } from "../../../(auth)/_components/useToast";
 
 export default function AdminRankingsPage() {
   const { isAdmin, isLoading: authLoading } = useAdminAuth();
   const { data: session } = useSession();
+  const { toasts, addToast, removeToast } = useToast();
   const {
     rankings: lists,
     loading,
@@ -81,6 +89,7 @@ export default function AdminRankingsPage() {
           ...data,
         };
         await updateRanking(updateData);
+        addToast("success", "Ranking Updated", `"${data.title}" has been updated successfully.`);
       } else {
         // Create new ranking - use real user ID from better-auth session
         if (!session?.user?.id) {
@@ -91,12 +100,14 @@ export default function AdminRankingsPage() {
           authorId: session.user.id,
         };
         await createRanking(createData);
+        addToast("success", "Ranking Created", `"${data.title}" has been created successfully.`);
       }
       closeModal();
       // No need to manually fetch - React Query handles cache updates automatically
     } catch (error) {
       console.error("Failed to save ranking:", error);
-      alert(error instanceof Error ? error.message : "Failed to save ranking");
+      const errorMessage = error instanceof Error ? error.message : "Failed to save ranking";
+      addToast("destructive", "Operation Failed", errorMessage);
     }
   };
 
@@ -104,6 +115,7 @@ export default function AdminRankingsPage() {
     const rankingToDelete = lists.find((ranking) => ranking.id === id);
     if (!rankingToDelete) {
       console.error("Ranking not found");
+      addToast("destructive", "Error", "Ranking not found");
       return;
     }
 
@@ -117,14 +129,13 @@ export default function AdminRankingsPage() {
 
     try {
       await deleteRanking(id);
-      console.log(`Successfully deleted "${rankingToDelete.title}"`);
+      addToast("success", "Ranking Deleted", `"${rankingToDelete.title}" has been deleted successfully.`);
     } catch (err) {
       console.error("Failed to delete ranking:", err);
-      alert(
-        err instanceof Error
-          ? err.message
-          : "Failed to delete ranking. Please try again."
-      );
+      const errorMessage = err instanceof Error
+        ? err.message
+        : "Failed to delete ranking. Please try again.";
+      addToast("destructive", "Delete Failed", errorMessage);
     }
   };
 
@@ -386,6 +397,22 @@ export default function AdminRankingsPage() {
           />
         </ModalContent>
       </Modal>
+
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right">
+        {toasts.map((toast: ToastState) => (
+          <Toast
+            key={toast.id}
+            variant={toast.variant}
+            onClose={() => removeToast(toast.id)}
+          >
+            <ToastTitle>{toast.title}</ToastTitle>
+            {toast.description && (
+              <ToastDescription>{toast.description}</ToastDescription>
+            )}
+          </Toast>
+        ))}
+      </ToastContainer>
     </div>
   );
 }
