@@ -279,6 +279,23 @@
 }
 
 @layer utilities {
+  /* Z-Index Utilities */
+  .z-modalBackdrop {
+    z-index: 1040;
+  }
+
+  .z-modal {
+    z-index: 1050;
+  }
+
+  .z-modalHigh {
+    z-index: 9998;
+  }
+
+  .z-toastHigh {
+    z-index: 9999;
+  }
+
   @keyframes shimmer {
     0% {
       transform: translateX(-100%);

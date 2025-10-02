@@ -14,6 +14,7 @@ interface ItemFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   maxPosition?: number;
+  initialPosition?: number;
 }
 
 interface MetadataField {
@@ -26,7 +27,8 @@ export function ItemForm({
   onSubmit,
   onCancel,
   isLoading = false,
-  maxPosition = 1
+  maxPosition = 1,
+  initialPosition
 }: ItemFormProps) {
   const {
     register,
@@ -43,7 +45,7 @@ export function ItemForm({
       description: initialData?.description || "",
       imageUrl: initialData?.imageUrl || "",
       metadata: initialData?.metadata || {},
-      position: initialData?.position ?? maxPosition,
+      position: initialData?.position ?? initialPosition ?? maxPosition,
     },
   });
 

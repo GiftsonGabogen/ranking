@@ -331,23 +331,18 @@ export default function ItemsManagementPage() {
               </ModalTitle>
             </ModalHeader>
             <ItemForm
-              initialData={
-                editingItem
-                  ? {
-                      title: editingItem.title,
-                      description: editingItem.description,
-                      imageUrl: editingItem.imageUrl || "",
-                      metadata: editingItem.metadata || {},
-                      position: editingItem.position,
-                    }
-                  : {
-                      position: items.length + 1,
-                    }
-              }
+              initialData={editingItem ? {
+                title: editingItem.title,
+                description: editingItem.description,
+                imageUrl: editingItem.imageUrl || "",
+                metadata: editingItem.metadata || {},
+                position: editingItem.position,
+              } : undefined}
               onSubmit={handleFormSubmit}
               onCancel={closeModal}
               isLoading={isSubmitting}
               maxPosition={items.length + 1}
+              initialPosition={items.length + 1}
             />
           </ModalContent>
         </Modal>

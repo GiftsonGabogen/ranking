@@ -370,6 +370,9 @@ export const zIndex = {
   popover: '1060',
   tooltip: '1070',
   toast: '1080',
+  // Legacy z-index values for specific components
+  modalHigh: '9998',    // Behind toast at 9999
+  toastHigh: '9999',    // Highest z-index for notifications
 } as const;
 
 // Breakpoint Tokens
