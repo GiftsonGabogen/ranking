@@ -86,6 +86,8 @@ export async function GET(
  * Body Parameters:
  * - title: string (optional) - Updated ranking title
  * - description: string (optional) - Updated ranking description
+ * - coverImage: string (optional) - Updated cover image URL
+ * - category: string (optional) - Updated category
  * - isActive: boolean (optional) - Updated active status
  * - allowSuggestions: boolean (optional) - Updated suggestions setting
  * - cycleLength: number (optional) - Updated cycle length
@@ -115,7 +117,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, description, isActive, allowSuggestions, cycleLength } =
+    const { title, description, coverImage, category, isActive, allowSuggestions, cycleLength } =
       body;
 
     // Check if ranking exists before updating
@@ -155,11 +157,53 @@ export async function PUT(
       );
     }
 
+    // Validate coverImage if provided
+    if (coverImage && coverImage.length > 500) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid cover image URL length",
+          message: "Cover image URL must be less than 500 characters"
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate URL format for coverImage if provided
+    if (coverImage) {
+      try {
+        new URL(coverImage);
+      } catch {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid cover image URL",
+            message: "Cover image must be a valid URL"
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate category length if provided
+    if (category && category.length > 50) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid category length",
+          message: "Category must be less than 50 characters"
+        },
+        { status: 400 }
+      );
+    }
+
     // Update ranking through service layer
     const updatedRanking = await rankingService().updateRanking({
       id,
       title,
       description,
+      coverImage,
+      category,
       isActive,
       allowSuggestions,
       cycleLength,

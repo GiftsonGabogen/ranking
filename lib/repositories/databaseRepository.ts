@@ -27,7 +27,8 @@ export class DatabaseRepository implements IRankingRepository {
         title: data.title,
         slug,
         description: data.description,
-        category: "general",
+        coverImage: data.coverImage || null,
+        category: data.category || "general",
         status: "draft" as const,
         allowSuggestions: data.allowSuggestions,
         cycleEndDate: new Date(
@@ -115,6 +116,12 @@ export class DatabaseRepository implements IRankingRepository {
         }),
         ...(data.description !== undefined && {
           description: data.description,
+        }),
+        ...(data.coverImage !== undefined && {
+          coverImage: data.coverImage || null,
+        }),
+        ...(data.category !== undefined && {
+          category: data.category,
         }),
         ...(data.isActive !== undefined && {
           status: data.isActive ? "published" : "draft",

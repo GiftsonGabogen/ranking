@@ -80,6 +80,8 @@ export async function GET(request: NextRequest) {
  * Body Parameters:
  * - title: string (required) - Ranking title
  * - description: string (required) - Ranking description
+ * - coverImage: string (optional) - Cover image URL
+ * - category: string (required) - Ranking category
  * - isActive: boolean (optional) - Whether ranking is active
  * - allowSuggestions: boolean (optional) - Whether suggestions are allowed
  * - cycleLength: number (optional) - Cycle length in days
@@ -93,15 +95,15 @@ export async function POST(request: NextRequest) {
     console.log("[AdminRankingsAPI] POST - Creating new ranking");
 
     const body = await request.json();
-    const { title, description, isActive, allowSuggestions, cycleLength } = body;
+    const { title, description, coverImage, category, isActive, allowSuggestions, cycleLength } = body;
 
     // Validate required fields
-    if (!title || !description) {
+    if (!title || !description || !category) {
       return NextResponse.json(
         {
           success: false,
           error: "Missing required fields",
-          message: "Title and description are required fields"
+          message: "Title, description, and category are required fields"
         },
         { status: 400 }
       );
@@ -130,6 +132,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate coverImage if provided
+    if (coverImage && coverImage.length > 500) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid cover image URL length",
+          message: "Cover image URL must be less than 500 characters"
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate URL format for coverImage if provided
+    if (coverImage) {
+      try {
+        new URL(coverImage);
+      } catch {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Invalid cover image URL",
+            message: "Cover image must be a valid URL"
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate category length
+    if (category.length > 50) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Invalid category length",
+          message: "Category must be less than 50 characters"
+        },
+        { status: 400 }
+      );
+    }
+
     // Get authenticated user ID
     const authorId = getAuthenticatedUserId(request);
     if (!authorId) {
@@ -147,6 +189,8 @@ export async function POST(request: NextRequest) {
     const newRanking = await rankingService().createRanking({
       title,
       description,
+      coverImage,
+      category,
       isActive: isActive || false,
       allowSuggestions: allowSuggestions || false,
       cycleLength: cycleLength || 30,

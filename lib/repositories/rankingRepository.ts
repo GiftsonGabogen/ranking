@@ -34,10 +34,10 @@ export class RankingRepository implements IRankingRepository {
         .toLowerCase()
         .replace(/\s+/g, "-")
         .replace(/[^a-z0-9-]/g, ""),
-      coverImage: `https://images.unsplash.com/photo-${Math.floor(
+      coverImage: data.coverImage || `https://images.unsplash.com/photo-${Math.floor(
         Math.random() * 1000000
       )}?w=800&h=400&fit=crop`,
-      category: "general",
+      category: data.category || "general",
       status: data.isActive ? "published" : "draft",
       cycleEndDate: new Date(
         Date.now() + data.cycleLength * 24 * 60 * 60 * 1000
@@ -95,6 +95,10 @@ export class RankingRepository implements IRankingRepository {
         ...existingRanking,
         title: data.title || existingRanking.title,
         description: data.description || existingRanking.description,
+        coverImage: data.coverImage !== undefined
+          ? data.coverImage || undefined
+          : existingRanking.coverImage,
+        category: data.category || existingRanking.category,
         status:
           data.isActive !== undefined
             ? data.isActive
