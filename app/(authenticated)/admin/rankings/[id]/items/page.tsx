@@ -86,6 +86,8 @@ export default function ItemsManagementPage() {
   // Drag and drop setup
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [draggedItem, setDraggedItem] = React.useState<RankingItem | null>(null);
+  // State to track the current display order for smooth animations
+  const [displayOrder, setDisplayOrder] = React.useState<string[]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -98,13 +100,25 @@ export default function ItemsManagementPage() {
     })
   );
 
-  const sortedItems = [...items].sort((a, b) => a.position - b.position);
+  // Update display order when items are first loaded
+  React.useEffect(() => {
+    if (items.length > 0 && displayOrder.length === 0) {
+      const sorted = [...items].sort((a, b) => a.position - b.position);
+      setDisplayOrder(sorted.map(item => item.id));
+      console.log('UI: Initial display order set:', sorted.map(item => item.id));
+    }
+  }, [items]);
+
+  // Get items in display order
+  const itemsInDisplayOrder = React.useMemo(() => {
+    return displayOrder.map(id => items.find(item => item.id === id)).filter(Boolean) as RankingItem[];
+  }, [items, displayOrder]);
 
   // Debug logging to track items state
   useEffect(() => {
     console.log('UI: Items updated:', items.map(i => ({ id: i.id, position: i.position, title: i.title })));
-    console.log('UI: Sorted items:', sortedItems.map(i => ({ id: i.id, position: i.position, title: i.title })));
-  }, [items, sortedItems]);
+    console.log('UI: Display order:', displayOrder);
+  }, [items, displayOrder]);
 
   useEffect(() => {
     if (rankingId) {
@@ -161,25 +175,28 @@ export default function ItemsManagementPage() {
     }
 
     if (active.id !== over.id) {
-      const oldIndex = sortedItems.findIndex(item => item.id === active.id);
-      const newIndex = sortedItems.findIndex(item => item.id === over.id);
+      const oldIndex = displayOrder.findIndex(id => id === active.id);
+      const newIndex = displayOrder.findIndex(id => id === over.id);
 
       console.log('Drag End:', {
         activeId: active.id,
         overId: over.id,
         oldIndex,
         newIndex,
-        sortedItems: sortedItems.map(i => ({ id: i.id, position: i.position }))
+        displayOrder,
       });
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        const newItems = arrayMove(sortedItems, oldIndex, newIndex);
-        const newItemIds = newItems.map(item => item.id);
+        // Update display order immediately for smooth animation
+        const newDisplayOrder = arrayMove(displayOrder, oldIndex, newIndex);
+        setDisplayOrder(newDisplayOrder);
 
-        console.log('Drag End - New order:', newItemIds);
-        console.log('Drag End - New items with positions:', newItems.map(i => ({ id: i.id, position: i.position })));
+        console.log('Drag End - New display order:', newDisplayOrder);
 
-        await reorderItems(rankingId, newItemIds);
+        // Update backend with new order after a short delay to allow animation to complete
+        setTimeout(() => {
+          reorderItems(rankingId, newDisplayOrder);
+        }, 100);
       }
     }
 
@@ -188,37 +205,39 @@ export default function ItemsManagementPage() {
   };
 
   const handleMoveUp = async (item: RankingItem) => {
-    if (item.position <= 1) return;
+    const itemIndex = displayOrder.findIndex(id => id === item.id);
+    if (itemIndex <= 0) return;
 
-    const itemAbove = items.find(i => i.position === item.position - 1);
-    if (!itemAbove) return;
+    const newIndex = itemIndex - 1;
+    const newDisplayOrder = arrayMove(displayOrder, itemIndex, newIndex);
 
-    // Create the new order by swapping the two items while preserving order of others
-    const newOrder = sortedItems.map(i => {
-      if (i.id === item.id) return itemAbove.id;
-      if (i.id === itemAbove.id) return item.id;
-      return i.id;
-    });
+    console.log('Move Up - New display order:', newDisplayOrder);
 
-    console.log('Move Up - New order:', newOrder);
-    await reorderItems(rankingId, newOrder);
+    // Update display order immediately for smooth animation
+    setDisplayOrder(newDisplayOrder);
+
+    // Update backend after a short delay
+    setTimeout(() => {
+      reorderItems(rankingId, newDisplayOrder);
+    }, 100);
   };
 
   const handleMoveDown = async (item: RankingItem) => {
-    if (item.position >= items.length) return;
+    const itemIndex = displayOrder.findIndex(id => id === item.id);
+    if (itemIndex >= displayOrder.length - 1) return;
 
-    const itemBelow = items.find(i => i.position === item.position + 1);
-    if (!itemBelow) return;
+    const newIndex = itemIndex + 1;
+    const newDisplayOrder = arrayMove(displayOrder, itemIndex, newIndex);
 
-    // Create the new order by swapping the two items while preserving order of others
-    const newOrder = sortedItems.map(i => {
-      if (i.id === item.id) return itemBelow.id;
-      if (i.id === itemBelow.id) return item.id;
-      return i.id;
-    });
+    console.log('Move Down - New display order:', newDisplayOrder);
 
-    console.log('Move Down - New order:', newOrder);
-    await reorderItems(rankingId, newOrder);
+    // Update display order immediately for smooth animation
+    setDisplayOrder(newDisplayOrder);
+
+    // Update backend after a short delay
+    setTimeout(() => {
+      reorderItems(rankingId, newDisplayOrder);
+    }, 100);
   };
 
   if (loading) {
@@ -341,11 +360,11 @@ export default function ItemsManagementPage() {
                 onDragEnd={handleDragEnd}
               >
                 <SortableContext
-                  items={sortedItems.map(item => item.id)}
+                  items={displayOrder}
                   strategy={verticalListSortingStrategy}
                 >
                   <div className="space-y-3">
-                    {sortedItems.map((item) => (
+                    {itemsInDisplayOrder.map((item, index) => (
                       <SortableItem
                         key={item.id}
                         item={item}
@@ -354,6 +373,7 @@ export default function ItemsManagementPage() {
                         onMoveUp={handleMoveUp}
                         onMoveDown={handleMoveDown}
                         totalItems={items.length}
+                        displayPosition={index + 1}
                       />
                     ))}
                   </div>

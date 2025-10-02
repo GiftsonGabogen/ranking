@@ -117,7 +117,7 @@ const reorderItems = async (rankingId: string, itemIds: string[]): Promise<{ suc
       return updatedItem;
     });
 
-    console.log('Hook: Reordered items with new positions:', reorderedItems);
+    console.log('Hook: Reordered items with updated positions:', reorderedItems);
 
     return { success: true, data: reorderedItems };
   } catch (error) {

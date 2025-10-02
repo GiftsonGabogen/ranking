@@ -24,6 +24,7 @@ interface SortableItemProps {
   onMoveUp: (item: RankingItem) => void;
   onMoveDown: (item: RankingItem) => void;
   totalItems: number;
+  displayPosition: number;
 }
 
 export function SortableItem({
@@ -32,7 +33,8 @@ export function SortableItem({
   onDelete,
   onMoveUp,
   onMoveDown,
-  totalItems
+  totalItems,
+  displayPosition
 }: SortableItemProps) {
   const {
     attributes,
@@ -68,7 +70,7 @@ export function SortableItem({
       >
         <GripVertical className="h-4 w-4 text-muted-foreground hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors" />
         <span className="text-sm font-medium text-muted-foreground w-8 select-none">
-          #{item.position}
+          #{displayPosition}
         </span>
       </div>
 
@@ -108,7 +110,7 @@ export function SortableItem({
           variant="outline"
           size="sm"
           onClick={() => onMoveUp(item)}
-          disabled={item.position <= 1}
+          disabled={displayPosition <= 1}
           title="Move Up"
         >
           <MoveUp className="h-4 w-4" />
@@ -117,7 +119,7 @@ export function SortableItem({
           variant="outline"
           size="sm"
           onClick={() => onMoveDown(item)}
-          disabled={item.position >= totalItems}
+          disabled={displayPosition >= totalItems}
           title="Move Down"
         >
           <MoveDown className="h-4 w-4" />
